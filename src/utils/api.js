@@ -60,7 +60,89 @@ const login = async (params = {}) => {
   return authResponse
 }
 
+// 刷新 token
+const refreshToken = async (accessToken) => {
+    // 请求刷新接口
+  let refreshResponse = await wepy.request({
+    url: host + '/' + 'authorizations/current',
+    method: 'put',
+    header: {
+      'Authorization': 'Bearer ' + accessToken
+    }
+  })
+
+    // 刷新成功状态码为200
+  if (refreshResponse.statusCode === 200) {
+        // 将token和过期时间保存在 storage 中
+    wepy.setStorageSync('access_token', refreshResponse.data.access_token)
+    wepy.setStorageSync('access_token_expired_at', new Date().getTime() + refreshResponse.data.expires_in * 1000)
+  }
+
+  return refreshResponse
+}
+
+// 获取token
+const getToken = async (options) => {
+    // 从缓存中取出token
+  let accessToken = wepy.getStorageSync('access_token')
+  let expiredAt = wepy.getStorageSync('access_token_expired_at')
+
+    // 如果token过期了 则调用刷新方法
+  if (accessToken && new Date().getTime() > expiredAt) {
+    let refreshResponse = await refreshToken(accessToken)
+    if (refreshResponse.statusCode === 200) {
+      accessToken = refreshResponse.data.access_token
+    } else {
+            // 如果刷新失败了 则重新调用登录方法
+      let authResponse = await login()
+      if (authResponse.statusCode === 201) {
+        accessToken = authResponse.data.access_token
+      }
+    }
+  }
+
+  return accessToken
+}
+
+// 带身份认证的请求
+const authRequest = async (options, showLoading = true) => {
+  if (typeof options === 'string') {
+    options = {
+      url: options
+    }
+  }
+
+  let accessToken = await getToken()
+
+    // 将token设置在header
+  let header = options.header || {}
+  header.Authorization = 'Bearer ' + accessToken
+  options.header = header
+  return request(options, showLoading)
+}
+
+// 退出登录
+const logout = async (params = {}) => {
+  let accessToken = wepy.getStorageSync('access_token')
+    // 调用删除token的接口 让Token失效
+  let logoutResponse = await wepy.request({
+    url: host + '/' + 'authorizations/current',
+    method: 'delete',
+    header: {
+      'Authorization': 'Bearer ' + accessToken
+    }
+  })
+
+  if (logoutResponse.statusCode === 204) {
+    wepy.clearStorage()
+  }
+  return logoutResponse
+}
+
 export default{
   request,
-  login
+  login,
+  logout,
+  authRequest,
+  refreshToken
 }

@@ -89,7 +89,7 @@ export default class Login extends wepy.page {
         // 请求结果为401 说明用户名和密码错误 显示错误提示
         if (authResponse.statusCode === 401) {
           this.error = true
-          this.errorMessage = authResponse.data.errorMessage
+          this.errorMessage = authResponse.data.message
           this.$apply()
         }
 
