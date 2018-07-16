@@ -1,13 +1,15 @@
 {
-  "description": "ispace app roject",
-  "setting": {
-    "urlCheck": true,
-    "es6": false,
-    "postcss": false,
-    "minified": false
-  },
-  "compileType": "miniprogram",
-  "appid": "wx6667f8dca71dfe9e",
-  "projectname": "ispace-weapp",
-  "miniprogramRoot": "./dist"
+	"description": "ispace app roject",
+	"setting": {
+		"urlCheck": false,
+		"es6": false,
+		"postcss": false,
+		"minified": false,
+		"newFeature": true
+	},
+	"compileType": "miniprogram",
+	"appid": "wx6667f8dca71dfe9e",
+	"projectname": "ispace-weapp",
+	"miniprogramRoot": "./dist",
+	"condition": {}
 }
