@@ -48,7 +48,7 @@ const login = async (params = {}) => {
   let authResponse = await request({
     url: 'weapp/authorizations',
     data: params,
-    method: 'POST'
+    method: 'post'
   })
 
     // 登录成功 记录token信息
