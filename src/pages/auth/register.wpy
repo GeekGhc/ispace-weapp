@@ -59,24 +59,26 @@ export default class Register extends wepy.page {
     navigationBarTitleText: '注册'
   }
   data = {
-        // 手机号
+    // 手机号
     phone: '',
-        // 手机号input是否disabled
+    // 手机号input是否disabled
     phoneDisabled: false,
-        // 图片验证码modal是否显示
+    // 图片验证码modal是否显示
     captchaModalHidden: true,
-        // 用户输入的验证码
+    // 用户输入的验证码
     captchaValue: null,
-        // 图片验证码key及过期时间
+    // 图片验证码key及过期时间
     captcha: {},
-        // 表单错误
-    errors: {}
+    // 表单错误
+    errors: {},
+    // 短信验证码及过期时间
+    verificationCode:{}
   }
-    // 获取图片验证码
+  // 获取图片验证码
   async getCaptchaCode() {
     this.errors.phone = null
 
-        // 判断手机号是否正确
+    // 判断手机号是否正确
     if (!(/^1[34578]\d{9}$/.test(this.phone))) {
       this.errors.phone = ['请输入正确的手机号']
       this.$apply()
@@ -84,22 +86,22 @@ export default class Register extends wepy.page {
     }
 
     try {
-            // 调用发送验证码接口 参数为手机号
+      // 调用发送验证码接口 参数为手机号
       let captchaResponse = await api.request({
         url: 'captchas',
-        method: 'POST',
+        method: 'post',
         data: {
           phone: this.phone
         }
       })
 
-            // 表单错误
+      // 表单错误
       if (captchaResponse.statusCode === 422) {
         this.errors = captchaResponse.data.errors
         this.$apply()
       }
 
-            // 记录key 和过期时间，打开modal
+      // 记录key 和过期时间，打开modal
       if (captchaResponse.statusCode === 201) {
         this.captcha = {
           key: captchaResponse.data.captcha_key,
@@ -107,7 +109,7 @@ export default class Register extends wepy.page {
           expiredAt: Date.parse(captchaResponse.data.expired_at)
         }
 
-                // 关闭modal
+        // 关闭modal
         this.captchaModalHidden = false
         this.$apply()
       }
@@ -115,23 +117,93 @@ export default class Register extends wepy.page {
       console.log(err)
       wepy.showModal({
         title: '提示',
-        content: '服务器错误,请联系管理员'
+        content: '服务器错误,请联系管理员register'
       })
     }
   }
 
+  // 重置注册流程，初始化data数据
+  resetRegister(){
+    this.captchaModalHidden = true
+    this.phoneDisabled = false
+    this.captcha = {}
+    this.verificationCode = {}
+    this.errors = {}
+  }
+
   methods = {
-        // 绑定手机输入
+    // 绑定手机输入
     bindPhoneInput(e) {
       this.phone = e.detail.value
     },
-        // 绑定验证码输入
+    // 绑定验证码输入
     bindCaptchaCodeInput(e) {
       this.captchaValue = e.detail.value
     },
-        // 响应获取图片按钮点击事件
+    // 响应获取图片按钮点击事件
     async tapCaptchaCode() {
       this.getCaptchaCode()
+    },
+    // 发送短信验证码
+    async sendVerificationCode(){
+      if(!this.captchaValue){
+        this.errors.captchaValue = ['请输入图片验证码']
+        return false
+      }
+
+      //检查验证码是否过期 重置流程
+      if(new Date().getTime()>this.captcha.expiredAt){
+        wepy.showToast({
+          title:'验证码已过期',
+          icon:'none',
+          duration:2000
+        })
+        this.resetRegister()
+        return false
+      }
+
+      try{
+        let codeResponse = await api.request({
+          url:'verificationCodes',
+          method:'post',
+          data:{
+            captcha_key:this.captcha.key,//返回图片验证码时的code
+            captcha_code:this.captchaValue
+          }
+        })
+      
+        //验证码错误提示
+        if(codeResponse.statusCode === 401){
+          this.errors.captchaValue = ['图片验证码错误']
+          this.$apply()
+          //重新请求图片验证码
+          await this.getCaptchaCode()
+          return false
+        }
+
+        // 记录key 和 过期时间
+        if(codeResponse.statusCode === 201){
+          this.verificationCode = {
+            key : codeResponse.data.key,
+            expiredAt : codeResponse.data.expired_at
+          }
+
+          //关闭modal
+          this.captchaModalHidden = true
+          //手机输入框disabled
+          this.phoneDisabled =  true
+          //清空报错信息
+          this.errors = {}
+          this.$apply()
+
+        }
+      }catch(err){
+          console.log(err)
+          wepy.showModal({
+            title: '提示',
+            content: '服务器错误，请联系管理员captcha'
+          })
+      }
     }
   }
 }
