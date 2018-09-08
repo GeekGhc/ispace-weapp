@@ -81,7 +81,7 @@ export default class Login extends wepy.page {
         return
       }
 
-            // 获取用户名和密码
+      // 获取用户名和密码
       let params = {
         username: this.username,
         password: this.password
