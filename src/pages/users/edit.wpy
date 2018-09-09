@@ -5,11 +5,26 @@
   .error-message {
     color: #E64340;
   }
+  .avatar {
+    width: 80px;
+    height: 80px;
+    display: block;
+    border-radius: 50%;
+  }
+  .avatar-wrap {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 </style>
 <template>
   <view class="page">
     <view class="page__bd">
       <form bindsubmit="submit">
+        <view class="avatar-wrap">
+          <image class="avatar" src="{{ user.avatar }}" @tap="updateAvatar"/>
+        </view>
         <!-- 填写姓名 -->
         <view class="weui-cells__title">姓名</view>
         <view class="weui-cells weui-cells_after-title">
@@ -76,7 +91,9 @@ export default class UserEdit extends wepy.page {
         // 用户信息
     user: null,
         // 错误信息
-    errors: null
+    errors: null,
+    // 头像id
+    avatarId: 0
   }
 
   async onShow() {
@@ -89,10 +106,18 @@ export default class UserEdit extends wepy.page {
   async submit(e) {
     this.errors = null
     try {
+        // e.detail.value为表单提交的数据
+      let formData = e.detail.value
+
+        // 当avatarId被设置后则加入到formData
+      if (this.avatarId !== 0) {
+        formData.avatar_image_id = this.avatarId
+      }
+
       let editResponse = await api.authRequest({
         url: 'user',
         method: 'put',
-        data: e.detail.value
+        data: formData
       })
 
             // 设置报错信息
@@ -126,6 +151,44 @@ export default class UserEdit extends wepy.page {
         title: '提示',
         content: '服务器错误 请联系管理员edit'
       })
+    }
+  }
+
+  methods ={
+    async updateAvatar() {
+            // 选择头像文件
+      let image = await wepy.chooseImage({count: 1})
+
+      try {
+                // 获取选择的图片
+        let avatar = image.tempFilePaths[0]
+
+                // 调用上传图片的接口
+        let imageResponse = await await api.updateFile({
+          url: 'images',
+          method: 'post',
+          name: 'image',
+          formData: {
+            type: 'avatar'
+          },
+          filePath: avatar
+        })
+
+                // 上传成功记录数据
+        if (imageResponse.statusCode === 201) {
+                    // 小程序的上传结果没有做 Json.parse处理 需要手动处理
+          let respnseData = JSON.parse(imageResponse.data)
+          this.user.avatar = respnseData.path
+          this.avatarId = respnseData.id
+          this.$apply()
+        }
+      } catch (err) {
+        console.log(err)
+        wepy.showModal({
+          title: '提示',
+          content: '服务器发生错误 请联系管理员avatar'
+        })
+      }
     }
   }
 }
