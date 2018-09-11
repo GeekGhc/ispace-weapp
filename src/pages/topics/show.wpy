@@ -18,31 +18,34 @@ page{
 </style>
 <template>
     <view class="page">
-    <view class="page__bd">
-      <view class="weui-cells weui-cells_after-title">
-        <navigator class="weui-cell">
-          <view class="weui-cell__hd avatar-wrap">
-            <image class="avatar" src="{{ topic.user.avatar }}"/>
-          </view>
-          <view class="weui-cell__bd">
-            <view>{{ topic.user.name }}</view>
-            <view class="page__desc">{{ topic.user.introduction }}</view>
-          </view>
-        </navigator>
-      </view>
-      <view class="topic-title">
-        <view class="page__title">{{ topic.title }}</view>
-        <view class="weui-media-box__info topic-info">
-          <view class="weui-media-box__info__meta">{{ topic.category.name }} • </view>
-          <view class="weui-media-box__info__meta">{{ topic.updated_at_diff }} • </view>
-          <view class="weui-media-box__info__meta">{{ topic.reply_count }} 次回复</view>
+        <view class="page__bd">
+        <view class="weui-cells weui-cells_after-title">
+            <navigator class="weui-cell" url="/pages/users/show?id={{ topic.user.id }}" open-type="redirect">
+            <view class="weui-cell__hd avatar-wrap">
+                <image class="avatar" src="{{ topic.user.avatar }}"/>
+            </view>
+            <view class="weui-cell__bd">
+                <view>{{ topic.user.name }}</view>
+                <view class="page__desc">{{ topic.user.introduction }}</view>
+            </view>
+
+            <!-- 向右的箭头 -->
+            <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+            </navigator>
         </view>
-      </view>
-      <view class="weui-article">
-        <rich-text nodes="{{ topic.body }}" bindtap="tap"></rich-text>
-      </view>
+        <view class="topic-title">
+            <view class="page__title">{{ topic.title }}</view>
+            <view class="weui-media-box__info topic-info">
+            <view class="weui-media-box__info__meta">{{ topic.category.name }} • </view>
+            <view class="weui-media-box__info__meta">{{ topic.updated_at_diff }} • </view>
+            <view class="weui-media-box__info__meta">{{ topic.reply_count }} 次回复</view>
+            </view>
+        </view>
+        <view class="weui-article">
+            <rich-text nodes="{{ topic.body }}" bindtap="tap"></rich-text>
+        </view>
+        </view>
     </view>
-  </view>
 </template>
 <script>
 import wepy from 'wepy'
