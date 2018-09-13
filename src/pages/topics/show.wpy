@@ -43,6 +43,7 @@ page{
         </view>
         <view class="weui-article">
             <rich-text nodes="{{ topic.body }}" bindtap="tap"></rich-text>
+            <button wx:if="{{ canDelete }}" @tap="deleteTopic" class="weui-btn mini-btn" type="default" size="mini">删除</button>
         </view>
         </view>
     </view>
@@ -57,8 +58,51 @@ export default class TopicShow extends wepy.page {
     navigationBarTitleText: '话题详情'
   }
   data = {
-        // 话题数据
-    topic: null
+    // 话题数据
+    topic: null,
+    // 当前登录用户
+    user: null
+  }
+  // 计算属性
+  computed = {
+    canDelete() {
+      if (!this.user || !this.topic) {
+        return false
+      }
+          // 当前用户是否是帖子的发布者
+      return this.user.id === this.topic.user_id
+    }
+  }
+  methods = {
+    async deleteTopic() {
+          // 删除确认
+      let res = await wepy.showModal({
+        title: '确认删除',
+        content: '确认删除该话题吗？',
+        confirmText: '删除',
+        cancelText: '取消'
+      })
+          // 用户点击取消则返回
+      if (!res.confirm) {
+        return
+      }
+          // 调用删除接口
+      let deleteResponse = await api.authRequest({
+        url: 'topics/' + this.topic.id,
+        method: 'delete'
+      })
+          // 删除成功 给出提示
+      if (deleteResponse.statusCode === 204) {
+        wepy.showModal({
+          title: '删除成功',
+          icon: 'success'
+        })
+      }
+          // 2秒后返回上一页
+      setTimeout(function() {
+        wepy.navigateBack()
+      }, 2000)
+    }
   }
     // 获取话题数据
   async getTopic(id) {
@@ -66,9 +110,10 @@ export default class TopicShow extends wepy.page {
       let topicResponse = await api.request({
         url: 'topics/' + id,
         data: {
-          include: 'category,user'
+          include: 'category,user,topReplies.user'
         }
       })
+      
       let topic = topicResponse.data
 
             // 格式化updated_at数据
@@ -83,8 +128,11 @@ export default class TopicShow extends wepy.page {
       })
     }
   }
-  onLoad(options) {
-    this.getTopic(options.id)
+  async onLoad(options) {
+    await this.getTopic(options.id)
+    // 获取当前登录用户
+    this.user = await this.$parent.getCurrentUser()
+    this.$apply()
   }
 }
 </script>
