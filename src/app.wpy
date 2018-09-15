@@ -134,6 +134,27 @@ export default class extends wepy.app {
     wepy.login().then(res => {
       console.log('login: ', res)
     })
+    // 小程序启动时调用获取唯独消息数
+    this.updateUnreadCount()
+    // 每隔60秒调用一次获取未读数接口
+    setInterval(() => {
+      this.updateUneadCount()
+    }, 60000)
+  }
+  // 获取未读消息数
+  async updateUnreadCount() {
+    // 未登录不需要请求
+    if (!this.checkLogin()) {
+      return
+    }
+
+    // 请求消息统计jiekou
+    let notificationResponse = await api.authRequest('user/notifications/status', false)
+
+    // 请求成功 记录到全局变量
+    if (notificationResponse.statusCode === 200) {
+      this.globalData.unReadCount = notificationResponse.data.unread_count
+    }
   }
 }
 </script>
