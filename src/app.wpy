@@ -49,7 +49,8 @@ export default class extends wepy.app {
       'pages/auth/register',
       'pages/replies/index',
       'pages/replies/userIndex',
-      'pages/replies/create'
+      'pages/replies/create',
+      'pages/notifications/index'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -138,7 +139,7 @@ export default class extends wepy.app {
     this.updateUnreadCount()
     // 每隔60秒调用一次获取未读数接口
     setInterval(() => {
-      this.updateUneadCount()
+      this.updateUnreadCount()
     }, 60000)
   }
   // 获取未读消息数

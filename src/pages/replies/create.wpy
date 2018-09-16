@@ -41,7 +41,7 @@ export default class ReplyCreate extends wepy.page {
         // 未登录则跳转到登录页面
     if (!this.$parent.checkLogin()) {
       wepy.navigateTo({
-        url: '/pages/auth/logini'
+        url: '/pages/auth/login'
       })
     }
     this.topicId = options.topic_id
