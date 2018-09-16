@@ -99,7 +99,7 @@ export default class Login extends wepy.page {
 
         // 201为登录成功 返回上一页
         if (authResponse.statusCode === 201) {
-          //获取用户权限
+          // 获取用户权限
           this.$parent.getPerms()
           wepy.navigateBack()
         }
@@ -120,7 +120,7 @@ export default class Login extends wepy.page {
 
         // 页面成功 自动返回上一页
       if (authResponse.statusCode === 201) {
-        //获取用户权限
+        // 获取用户权限
         this.$parent.getPerms()
         wepy.navigateBack()
       }

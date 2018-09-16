@@ -101,7 +101,7 @@ export default class ReplyMixin extends wepy.mixin {
     if (!user) {
       return false
     }
-    //用户时评论发布者或者拥有管理内容的权限
+    // 用户时评论发布者或者拥有管理内容的权限
     return (reply.user_id === user.id) || this.$parent.can('manage_contents')
   }
   async onPullDownRefresh() {

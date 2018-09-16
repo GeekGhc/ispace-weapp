@@ -64,20 +64,20 @@ export default class UserShow extends wepy.page {
         // 用户数据
     user: null
   }
-  onShareAppMessage(res){
-    return{
-      //标题
-      title:this.user.name,
-      //路径未该话题路径
-      path:'/pages/users/show?id='+this.user.id,
-      //图为用户头像
-      imageUrl:this.user.avatar,
-      success:function(res){
-        //分享成功
+  onShareAppMessage(res) {
+    return {
+      // 标题
+      title: this.user.name,
+      // 路径未该话题路径
+      path: '/pages/users/show?id=' + this.user.id,
+      // 图为用户头像
+      imageUrl: this.user.avatar,
+      success: function(res) {
+        // 分享成功
         console.log(res)
       },
-      fail:function(res){
-        //分享失败
+      fail: function(res) {
+        // 分享失败
         console.log(res)
       }
     }

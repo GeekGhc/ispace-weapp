@@ -188,18 +188,18 @@ export default class TopicShow extends wepy.page {
       this.getTopic(this.topic.id)
     })
   }
-  onShareAppMessage(res){
-    return{
-      //标题
-      title:this.topic.title,
-      //路径未该话题路径
-      path:'/pages/topics/show?id='+this.topic_id,
-      success:function(res){
-        //分享成功
+  onShareAppMessage(res) {
+    return {
+      // 标题
+      title: this.topic.title,
+      // 路径未该话题路径
+      path: '/pages/topics/show?id=' + this.topic_id,
+      success: function(res) {
+        // 分享成功
         console.log(res)
       },
-      fail:function(res){
-        //分享失败
+      fail: function(res) {
+        // 分享失败
         console.log(res)
       }
     }
