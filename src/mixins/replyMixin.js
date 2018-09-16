@@ -16,6 +16,46 @@ export default class ReplyMixin extends wepy.mixin {
         // 当前页数
     page: 1
   }
+  methods = {
+      // 删除回复
+    async deleteReply(topicId, replyId) {
+          // 确认是否删除
+      let res = wepy.showModal({
+        title: '确认删除',
+        content: '你确认删除该评论吗？',
+        confirmText: '确认',
+        cancelText: '取消'
+      })
+          // 点击取消后返回
+      if (!res) {
+        return
+      }
+      try {
+        let deleteResponse = await api.authRequest({
+          url: 'topics/' + topicId + '/replies/' + replyId,
+          method: 'delete'
+        })
+            // 请求删除成功
+        if (deleteResponse.sattusCode === 204) {
+          wepy.showToast({
+            title: '删除成功',
+            icon: 'success',
+            duration: 2000
+          })
+                // 移除已经删除的评论
+          this.replies = this.replies.filter((reply) => reply.id !== reply)
+          this.$apply()
+        }
+        return deleteResponse
+      } catch (err) {
+        console.log(err)
+        wepy.showModal({
+          title: '提示',
+          content: '服务器错误 请联系管理员'
+        })
+      }
+    }
+  }
   async getReplies(reset = false) {
     try {
                 // 请求话题回复接口
@@ -29,8 +69,12 @@ export default class ReplyMixin extends wepy.mixin {
       if (repliesResponse.statusCode === 200) {
         let replies = repliesResponse.data.data
 
-                    // 格式化回复时间
+        // 获取当前登录用户
+        let user = await this.$parent.getCurrentUser()
+        // 格式化回复时间
         replies.forEach(function(reply) {
+            // 设置是否可以删除
+          reply.can_delete = this.canDelete(user, reply)
           reply.created_at_diff = util.diffForHumans(reply.created_at)
         })
                     // 如果reset不为true则会合并  否则进行覆盖
@@ -52,6 +96,12 @@ export default class ReplyMixin extends wepy.mixin {
         content: '服务器错误 请联系管理员'
       })
     }
+  }
+  canDelete(user, reply) {
+    if (!user) {
+      return false
+    }
+    return (reply.user_id === user.id)
   }
   async onPullDownRefresh() {
     this.noMoreData = false
