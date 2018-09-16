@@ -226,6 +226,9 @@ export default class Register extends wepy.page {
           // 设置用户信息
         wepy.setStorageSync('userInfo', registerResponse.data)
 
+        //获取用户权限
+        this.$parent.getPerms()
+        
         wepy.showToast({
           title: '注册成功',
           icon: 'success'

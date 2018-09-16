@@ -109,8 +109,8 @@ export default class TopicShow extends wepy.page {
       if (!this.user || !this.topic) {
         return false
       }
-          // 当前用户是否是帖子的发布者
-      return this.user.id === this.topic.user_id
+          // 当前用户是否是帖子的发布者或者拥有内容管理权限
+      return (this.user.id === this.topic.user_id) || this.$parent.can('manage_contents')
     }
   }
   methods = {

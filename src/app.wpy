@@ -106,6 +106,30 @@ export default class extends wepy.app {
 
     return user
   }
+  //获取权限
+  async getPerms(){
+    let perms = []
+    if(!this.checkLogin()){
+      return perms
+    }
+
+    //缓存中没有则请求权限接口
+    try{
+      let permsResponse = await api.authRequest('users/permissions',false)
+      //请求成功 存入缓存
+      if(permsResponse.statusCode === 200){
+        perms = permsResponse.data.data
+        wepy.setStorageSync('perms',perms)
+      }
+    }catch(err){
+      console.log(err)
+      wepy.showModal({
+        title: '提示',
+        content: '获取用户权限失败'
+      })
+    }
+    return perms
+  }
 
   // 用户是否已经登录
   checkLogin() {
@@ -124,6 +148,19 @@ export default class extends wepy.app {
     this.globalData.refreshPages.splice(refreshIndex, 1)
     callback && callback()
   }
+  //判断用户是否拥有某个权限
+  can(targetPerm){
+    if(!this.checkLogin()){
+      return false
+    }
+    //从缓存中获取用户权限
+    let perms = wepy.getStorageSync('perms') || []
+    //判断权限中是否有目标权限
+    if(perms.find(perm => perm.name === targetPerm){
+      return true
+    })
+    return false
+  }
 
   constructor () {
     super()
@@ -141,6 +178,8 @@ export default class extends wepy.app {
     setInterval(() => {
       this.updateUnreadCount()
     }, 60000)
+    //获取用户权限
+    this.getPerms()
   }
   // 获取未读消息数
   async updateUnreadCount() {
