@@ -2,7 +2,7 @@
 :tada: This app helps you to learn wechat App based on community.
 
 ## Technology stack
-`wepy`+'laravel'+'dingo'+'wechat'
+`wepy`+`WeUI`+`laravel`+`dingo`+`wechat`
 
 ## Installation
 clone the project from github
