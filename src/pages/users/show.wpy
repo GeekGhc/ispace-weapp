@@ -40,7 +40,7 @@
 
         <navigator class="weui-cell weui-cell_access user-links" url="/pages/topics/userIndex?user_id={{ user.id }}">
           <view class="weui-cell__bd">
-            <view class="weui-cell__bd">Ta 的话题</view>
+            <view class="weui-cell__bd">Ta 的帖子</view>
           </view>
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>

@@ -95,7 +95,7 @@ import util from '@/utils/util'
 
 export default class TopicShow extends wepy.page {
   config = {
-    navigationBarTitleText: '话题详情'
+    navigationBarTitleText: '帖子详情'
   }
   data = {
     // 话题数据
@@ -118,7 +118,7 @@ export default class TopicShow extends wepy.page {
           // 删除确认
       let res = await wepy.showModal({
         title: '确认删除',
-        content: '确认删除该话题吗？',
+        content: '确认删除该帖子吗？',
         confirmText: '删除',
         cancelText: '取消'
       })

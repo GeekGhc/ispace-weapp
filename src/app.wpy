@@ -71,7 +71,7 @@ export default class extends wepy.app {
         selectedIconPath: 'images/user_selected.png'
       }],
       color: '#707070',
-      selectedColor: '#00b5ad'
+      selectedColor: '#19be6b'
     }
   }
 
@@ -193,7 +193,7 @@ export default class extends wepy.app {
 
     // 请求成功 记录到全局变量
     if (notificationResponse.statusCode === 200) {
-      this.globalData.unReadCount = notificationResponse.data.unread_count
+      this.globalData.unreadCount = notificationResponse.data.unread_count
     }
   }
 }

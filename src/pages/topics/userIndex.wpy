@@ -10,7 +10,7 @@ import wepy from 'wepy'
 import topicList from '@/components/topicList'
 export default class UserIndex extends wepy.page {
   config = {
-    navigationBarTitleText: 'Ta 发布的话题',
+    navigationBarTitleText: 'Ta 发布的帖子',
     enablePullDownRefresh: true
   }
   data = {
