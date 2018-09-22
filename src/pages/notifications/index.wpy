@@ -74,11 +74,11 @@ export default class notificationIndex extends wepy.page {
         let notifications = notificationResponse.data.data
                 // 格式化时间
         notifications.forEach(function(notification) {
-          notification.created_at_diff = util.difForHumans(notification.created_at)
+          notification.created_at_diff = util.diffForHumans(notification.created_at)
         })
                 // 覆盖数据还是合并
         this.notifications = reset ? notifications : this.notifications.concat(notifications)
-        let pagination = notificationResponse.data.meta.paginate
+        let pagination = notificationResponse.data.meta.pagination
                 // 判断是否有更多数据
         if (pagination.current_page === pagination.total_pages) {
           this.noMoreData = false

@@ -36,14 +36,14 @@ export default class ReplyMixin extends wepy.mixin {
           method: 'delete'
         })
             // 请求删除成功
-        if (deleteResponse.sattusCode === 204) {
+        if (deleteResponse.statusCode === 204) {
           wepy.showToast({
             title: '删除成功',
             icon: 'success',
             duration: 2000
           })
                 // 移除已经删除的评论
-          this.replies = this.replies.filter((reply) => reply.id !== reply)
+          this.replies = this.replies.filter((reply) => reply.id !== replyId)
           this.$apply()
         }
         return deleteResponse
@@ -58,7 +58,7 @@ export default class ReplyMixin extends wepy.mixin {
   }
   async getReplies(reset = false) {
     try {
-                // 请求话题回复接口
+      // 请求话题回复接口
       let repliesResponse = await api.request({
         url: this.requestData.url,
         data: {
@@ -72,7 +72,7 @@ export default class ReplyMixin extends wepy.mixin {
         // 获取当前登录用户
         let user = await this.$parent.getCurrentUser()
         // 格式化回复时间
-        replies.forEach(function(reply) {
+        replies.forEach((reply) => {
             // 设置是否可以删除
           reply.can_delete = this.canDelete(user, reply)
           reply.created_at_diff = util.diffForHumans(reply.created_at)
@@ -93,7 +93,7 @@ export default class ReplyMixin extends wepy.mixin {
       console.log(err)
       wepy.showModal({
         title: '提示',
-        content: '服务器错误 请联系管理员'
+        content: '服务器错误 请联系管理员22'
       })
     }
   }
@@ -117,7 +117,7 @@ export default class ReplyMixin extends wepy.mixin {
     }
             // 设置为加载中
     this.isLoading = true
-    this.page = this.pgae + 1
+    this.page = this.page + 1
     await this.getReplies()
     this.isLoading = false
     this.$apply()

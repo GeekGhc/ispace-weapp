@@ -115,7 +115,7 @@ export default class extends wepy.app {
 
     // 缓存中没有则请求权限接口
     try {
-      let permsResponse = await api.authRequest('users/permissions', false)
+      let permsResponse = await api.authRequest('user/permissions', false)
       // 请求成功 存入缓存
       if (permsResponse.statusCode === 200) {
         perms = permsResponse.data.data
@@ -137,7 +137,7 @@ export default class extends wepy.app {
   }
   globalData = {
     refreshPages: [],
-    unReadCount: 0
+    unreadCount: 0
   }
   checkRefreshPages (route, callback) {
     let refreshIndex = this.globalData.refreshPages.indexOf(route)
@@ -189,7 +189,7 @@ export default class extends wepy.app {
     }
 
     // 请求消息统计jiekou
-    let notificationResponse = await api.authRequest('user/notifications/status', false)
+    let notificationResponse = await api.authRequest('user/notifications/stats', false)
 
     // 请求成功 记录到全局变量
     if (notificationResponse.statusCode === 200) {
